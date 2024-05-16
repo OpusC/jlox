@@ -78,7 +78,11 @@ public class Scanner {
                 if (match('/')) {
                     // A comment goes until the end of the line.
                     while (peek() != '\n' && !isAtEnd()) advance();
-                } else {
+                // the start of a multi-line comment
+                } else if (match('*')) {
+                    comment();
+                }
+                else {
                     addToken(TokenType.SLASH);
                 }
                 break;
@@ -115,6 +119,7 @@ public class Scanner {
         addToken(type);
     }
 
+
     private void number() {
         while (isDigit(peek())) advance();
 
@@ -130,9 +135,29 @@ public class Scanner {
 
     }
 
+    private void comment() {
+        while (!isAtEnd()) {
+            advance();
+
+            if (peek() == '*' && peekNext() == '/') {
+                advance();
+                advance();
+                return;
+            }
+
+            if (peek() == '\n') {line++;}
+        }
+
+        if (isAtEnd()) {
+            JLox.error(line, "Unterminated comment");
+            return;
+        }
+    }
+
     private void string() {
         while (peek() != '"' && !isAtEnd()) {
-            if (peek() == '\n') line++;
+            if (peek() == '\n') {line++;}
+
             advance();
         }
 
