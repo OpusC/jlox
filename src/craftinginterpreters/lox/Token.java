@@ -1,3 +1,5 @@
+package craftinginterpreters.lox;
+
 public class Token {
     final TokenType type;
     final String lexeme;
